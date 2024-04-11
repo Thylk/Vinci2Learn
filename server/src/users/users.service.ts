@@ -10,33 +10,51 @@ import { genSalt, hash } from 'bcrypt';
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private readonly usersRepository: Repository<User>,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
     const plainPassword = createUserDto.password;
     const salt = await genSalt();
     createUserDto.password = await hash(plainPassword, salt);
-    return this.userRepository.save(createUserDto);
+    return this.usersRepository.save(createUserDto);
   }
 
   findAll() {
-    return this.userRepository.find();
+    return this.usersRepository.find({
+      order: {
+        level: 'DESC',
+        exp: 'DESC',
+      },
+    });
   }
 
   findOne(id: number) {
-    return this.userRepository.findOneBy({ id });
+    return this.usersRepository.findOneBy({ id });
   }
 
   findOneByEmail(email: string) {
-    return this.userRepository.findOneBy({ email: email });
+    return this.usersRepository.findOneBy({ email: email });
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
-    return this.userRepository.update(id, updateUserDto);
+    return this.usersRepository.update(id, updateUserDto);
   }
 
-  remove(id: number) {
-    return this.userRepository.delete(id);
+  async completeLesson(id: number) {
+    const user = await this.usersRepository.findOneBy({ id });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    user.exp = user.exp + 50;
+
+    if (user.exp >= 100) {
+      user.level = user.level + 1;
+      user.exp = user.exp - 100;
+    }
+
+    return this.usersRepository.update(+id, user);
   }
 }

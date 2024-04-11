@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CreateLessonDto } from './dto/create-lesson.dto';
-import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { Repository } from 'typeorm';
 import { Lesson } from './entities/lesson.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -18,17 +17,5 @@ export class LessonsService {
 
   findAll() {
     return this.lessonsRepository.find();
-  }
-
-  findOne(id: number) {
-    return this.lessonsRepository.findOneBy({ id });
-  }
-
-  update(id: number, updateLessonDto: UpdateLessonDto) {
-    return this.lessonsRepository.update(id, updateLessonDto);
-  }
-
-  remove(id: number) {
-    return this.lessonsRepository.delete(id);
   }
 }

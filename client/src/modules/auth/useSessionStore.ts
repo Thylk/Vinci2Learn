@@ -1,31 +1,25 @@
 import { create } from 'zustand';
-import { User } from '../users/User.ts';
+
+export interface Session {
+  token: string;
+  user: {
+    id: number;
+    username: string;
+    email: string;
+  };
+}
 
 interface State {
-  token: string | null;
-  user: User | null;
+  session: Session | null;
 }
 
 interface Actions {
-  setToken: (token: string | null) => void;
-  setUser: (user: User) => void;
-  removeToken: () => void;
-  removeUser: () => void;
+  setSession: (session: Session | null) => void;
+  removeSession: () => void;
 }
 
 export const useSessionStore = create<State & Actions>((set) => ({
-  token: null,
-  user: null,
-  setToken: (token) => {
-    set({ token });
-  },
-  setUser: (user) => {
-    set({ user });
-  },
-  removeToken: () => {
-    set({ token: null });
-  },
-  removeUser: () => {
-    set({ user: null });
-  },
+  session: null,
+  setSession: (session) => set({ session }),
+  removeSession: () => set({ session: null }),
 }));
